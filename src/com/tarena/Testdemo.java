@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.BlockLocation;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
@@ -71,7 +72,23 @@ public class Testdemo {
 
 		//目录重命名
 		fileSystem.rename(new Path("/part01"), new Path("/part02"));
+	}
+	
+	
+	//查看块信息
+	@Test
+	public void getBlockLocation() throws IOException, URISyntaxException{
+		Configuration conf = new Configuration();
+		FileSystem fileSystem = FileSystem.get(
+				new URI("hdfs://192.168.1.130:9000"),
+				conf);
 		
-		
+		//三个参数：文件路径、start控制的是块的起始位置、length块的终止位置
+		BlockLocation[] blockLocations = fileSystem.getFileBlockLocations(
+			  new Path("/part02/hadoop.tar.gz"), 0, Integer.MAX_VALUE);
+	  
+		for (BlockLocation blockLocation : blockLocations) {
+			System.out.println(blockLocation);
+		}
 	}
 }
